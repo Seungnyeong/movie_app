@@ -1,55 +1,51 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import axios from 'axios';
+import Movie from './Movie';
+import "./App.css"
 
-function Food({name, picture, rating}){
-  
-  return( 
-  <div>
-    <h2>I LIKE {name}</h2>
-      <img src={picture} alt={name}/>
-      <h4>{rating}/5.0</h4>
-  </div>
-  )
+class App extends React.Component {
+  state = {
+    isLoading: true,
+    movies: []
+  }
+  // async 선언으로 비동기화(오기까지 기다림) 그거 뭐냐고 물으신다면 await가 있는 부분이 다 올때까지 기다림
+  getMovies = async () => {
+    const { data: { data: { movies } } } = await axios.get("https://yts-proxy.now.sh/list_movies.json?sort_by=rating")
+    console.log(movies);
+    this.setState({ movies, isLoading: false });
+  }
+  // data patch 하는 부분
+  componentDidMount() {
+    this.getMovies();
+  }
+  render() {
+    const { isLoading, movies } = this.state
+    return (
+    <section className="container">{isLoading
+      ? (
+        <div className="loader">
+           <span className="loader_text">Loading ...</span> 
+        </div>
+      )
+      : (
+          <div className="movies">
+            {
+               movies.map(movie => {
+                return <Movie
+                  key={movie.id}
+                  id={movie.id}
+                  year={movie.year}
+                  title={movie.title}
+                  summary={movie.summary}
+                  poster={movie.medium_cover_image} 
+                  genres={movie.genres}
+                  />
+              })
+            }
+          </div>
+        )}
+     </section>
+    )
+  }
 }
-
-Food.propType ={
-  name: PropTypes.string.isRequired,
-  picture: PropTypes.string.isRequired,
-  rating: PropTypes.number.isRequired
-}
-
-const favFood = [
-  {
-    id : 1,
-    name : "ironman1",
-    image : "http://file3.instiz.net/data/file3/2018/05/19/6/f/5/6f54ace6e4a4dac07057f71a72ae8d75.gif",
-    rating : "5"
-  },
-  {
-    id : 2,
-    name : "ironman2",
-    image : "http://file3.instiz.net/data/file3/2018/05/19/e/f/0/ef08db72ff784adb11ed6d5fa88bf405.gif",
-    rating : 4.3
-  },
-  {
-    id : 3,
-    name : "ironman3",
-    image : "http://file3.instiz.net/data/file3/2018/05/19/f/f/e/ffedf6e527d28f97fa9be463f947a4f7.gif",
-    rating : 4.8
-  } 
-]
-
-
-
-function App() {
-  return (
-    <div>
-      {favFood.map(man => (
-        <Food key={man.id} name={man.name} picture={man.image} rating={man.rating}/> 
-      ))}   
-    </div>
-    
-  );
-}
-
 export default App;

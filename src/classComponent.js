@@ -17,7 +17,7 @@ class App extends React.Component{
     minus = () => {
         this.setState(current => ({count : current.count - 1}))
     }
-    // component가 렌더링 되고 난 이후에 시작됨.
+    // component가 렌더링 되고 난 이후에 시작됨. // 밑에 것들은 컴포넌트 라이프 사이클이라고 보면됨
     componentDidMount(){
         console.log("compenent rendered")
     }
